@@ -6,4 +6,6 @@ class SecretStore:
         self.prefix = prefix
 
     def get(self, name: str) -> str | None:
-        return os.getenv(f"{self.prefix}{name}")
+        if name.startswith(self.prefix):
+            return os.getenv(name)
+        return os.getenv(f"{self.prefix}{name}") or os.getenv(name)
