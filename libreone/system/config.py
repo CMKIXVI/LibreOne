@@ -1,16 +1,17 @@
 import os
 from dataclasses import dataclass
+from os import PathLike
 
 
 @dataclass(frozen=True)
 class SystemConfig:
     environment: str = "production"
-    data_dir: str = ".libreone"
+    data_dir: str | PathLike[str] = ".libreone"
 
     def __post_init__(self) -> None:
         if not isinstance(self.environment, str) or not self.environment.strip():
             raise ValueError("environment cannot be empty")
-        if not isinstance(self.data_dir, str) or not self.data_dir.strip():
+        if not isinstance(self.data_dir, (str, PathLike)) or not os.fspath(self.data_dir).strip():
             raise ValueError("data_dir cannot be empty")
 
     @classmethod
