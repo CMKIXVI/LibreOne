@@ -1,0 +1,3 @@
+[submodule "oopsone"]
+	path = oopsone
+	url = https://github.com/openwidgets/oopsone.git
