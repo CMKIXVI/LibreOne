@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from queue import Empty, Queue
 from typing import Generic, TypeVar
 
@@ -7,26 +7,31 @@ T = TypeVar("T")
 
 @dataclass
 class Channel(Generic[T]):
-    _queue: Queue[T]
+    _queue: Queue[T] | None = field(default_factory=Queue)
 
     @classmethod
     def create(cls) -> "Channel[T]":
-        return cls(Queue())
+        return cls()
+
+    def _require_open(self) -> Queue[T]:
+        if self._queue is None:
+            raise RuntimeError("channel is closed")
+        return self._queue
 
     def send(self, value: T) -> None:
-        self._queue.put_nowait(value)
+        self._require_open().put_nowait(value)
 
     def receive(self) -> T:
         try:
-            return self._queue.get_nowait()
+            return self._require_open().get_nowait()
         except Empty as exc:
             raise RuntimeError("channel is empty") from exc
 
     @property
     def pending(self) -> int:
-        return self._queue.qsize()
+        return self._require_open().qsize()
 
     def close(self) -> None:
         if self._queue is None:
-            raise RuntimeError("channel is closed")
-        self._queue = None  # type: ignore[assignment]
+            raise RuntimeError("channel is already closed")
+        self._queue = None
