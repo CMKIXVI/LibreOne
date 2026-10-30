@@ -1,13 +1,16 @@
+"""Core data contracts for LibreOne requests and results."""
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from uuid import UUID
+from typing import Any
 from .ids import new_id
 
 @dataclass(frozen=True, slots=True)
-class Entity:
-    id: UUID = field(default_factory=new_id)
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+class Request:
+    action: str
+    input: Any = None
+    id: str = field(default_factory=lambda: str(new_id()))
 
-    def __post_init__(self) -> None:
-        if self.created_at.tzinfo is None:
-            raise ValueError("created_at must be timezone-aware")
+@dataclass(frozen=True, slots=True)
+class Result:
+    request_id: str
+    value: Any = None
+    success: bool = True
