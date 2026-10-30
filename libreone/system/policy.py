@@ -12,5 +12,7 @@ class Policy:
     name: str
     decision: Decision
 
-    def permits(self) -> bool:
+    def permits(self, resource: str | None = None) -> bool:
+        if resource is not None and resource != self.name:
+            return False
         return self.decision is Decision.ALLOW
