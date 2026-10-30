@@ -1,27 +1,20 @@
 from dataclasses import dataclass
 
 
-class _CapabilityKey(str):
-    def __new__(cls, primary: str, aliases: tuple[str, ...] = ()):
-        value = str.__new__(cls, primary)
-        value._aliases = aliases
-        return value
-
-    def __eq__(self, other: object) -> bool:
-        if str.__eq__(self, other):
-            return True
-        return any(str.__eq__(alias, other) for alias in self._aliases)
-
-    def __hash__(self) -> int:
-        return str.__hash__(self)
-
-
 @dataclass(frozen=True)
 class Capability:
     name: str
     version: str
     description: str = ""
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.name, str) or not self.name.strip():
+            raise ValueError("capability name cannot be empty")
+        if not isinstance(self.version, str) or not self.version.strip():
+            raise ValueError("capability version cannot be empty")
+        if not isinstance(self.description, str):
+            raise TypeError("capability description must be a string")
+
     @property
     def key(self) -> str:
-        return _CapabilityKey(f"{self.name}@{self.version}", (f"{self.name}:{self.version}",))
+        return f"{self.name}@{self.version}"
