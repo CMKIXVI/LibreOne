@@ -7,6 +7,8 @@ class Scheduler:
         self._queue: deque[Callable[[], object]] = deque()
 
     def submit(self, task: Callable[[], object]) -> None:
+        if not callable(task):
+            raise TypeError("scheduled task must be callable")
         self._queue.append(task)
 
     def run_once(self) -> object | None:
@@ -14,5 +16,6 @@ class Scheduler:
             return None
         return self._queue.popleft()()
 
+    @property
     def pending(self) -> int:
         return len(self._queue)
