@@ -13,13 +13,29 @@ def test_resource_limits_accepts_zero():
 
 def test_resource_limits_rejects_negative_values():
     with pytest.raises(ValueError):
-        ResourceLimits(cpu_seconds=-1).validate()
+        ResourceLimits(cpu_seconds=-1)
     with pytest.raises(ValueError):
-        ResourceLimits(memory_bytes=-1).validate()
+        ResourceLimits(memory_bytes=-1)
     with pytest.raises(ValueError):
-        ResourceLimits(disk_bytes=-1).validate()
+        ResourceLimits(disk_bytes=-1)
     with pytest.raises(ValueError):
-        ResourceLimits(wall_seconds=-1).validate()
+        ResourceLimits(wall_seconds=-1)
+
+
+def test_resource_limits_rejects_non_numeric_values():
+    with pytest.raises(TypeError):
+        ResourceLimits(cpu_seconds="1")
+    with pytest.raises(TypeError):
+        ResourceLimits(memory_bytes=1.5)
+    with pytest.raises(TypeError):
+        ResourceLimits(disk_bytes=1.5)
+    with pytest.raises(TypeError):
+        ResourceLimits(wall_seconds="1")
+
+
+def test_resource_limits_rejects_booleans():
+    with pytest.raises(TypeError):
+        ResourceLimits(cpu_seconds=True)
 
 
 def test_resource_limits_is_immutable():
