@@ -1,5 +1,7 @@
 from enum import Enum
 
+from .errors import StateError
+
 
 class SystemPhase(str, Enum):
     OFF = "off"
@@ -24,6 +26,5 @@ class SystemState:
             SystemPhase.FAILED: {SystemPhase.OFF, SystemPhase.BOOTING},
         }
         if target not in allowed[self.phase]:
-            from .errors import StateError
             raise StateError(f"invalid transition: {self.phase.value} -> {target.value}")
         self.phase = target
