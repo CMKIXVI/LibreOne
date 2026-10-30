@@ -13,8 +13,8 @@ def test_system_config_is_constructible(tmp_path):
 
 def test_system_config_reads_environment(monkeypatch, tmp_path):
     monkeypatch.setenv("LIBREONE_ENV", "ci")
-    monkeypatch.setenv("LIBREONE_DATA_DIR", os.fspath(tmp_path))
     monkeypatch.delenv("LIBREONE_ENVIRONMENT", raising=False)
+    monkeypatch.setenv("LIBREONE_DATA_DIR", os.fspath(tmp_path))
     config = SystemConfig.from_environment()
     assert config.environment == "ci"
     assert config.data_dir == os.fspath(tmp_path)
@@ -34,6 +34,13 @@ def test_system_config_environment_defaults(monkeypatch):
     config = SystemConfig.from_environment()
     assert config.environment == "production"
     assert config.data_dir == ".libreone"
+
+
+def test_system_config_rejects_empty_values():
+    with pytest.raises(ValueError):
+        SystemConfig(environment="")
+    with pytest.raises(ValueError):
+        SystemConfig(data_dir="   ")
 
 
 def test_system_config_is_immutable():
