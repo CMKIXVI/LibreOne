@@ -1,16 +1,15 @@
-from .capabilities import Capability
+"""Typed service registry with explicit replacement semantics."""
+from typing import TypeVar
+T = TypeVar("T")
 
-class CapabilityRegistry:
+class Registry:
     def __init__(self) -> None:
-        self._items: dict[str, Capability] = {}
-
-    def register(self, capability: Capability) -> None:
-        if capability.name in self._items:
-            raise ValueError(f"capability already registered: {capability.name}")
-        self._items[capability.name] = capability
-
-    def get(self, name: str) -> Capability | None:
-        return self._items.get(name)
-
-    def names(self) -> tuple[str, ...]:
-        return tuple(sorted(self._items))
+        self._services: dict[str, object] = {}
+    def bind(self, name: str, service: object) -> None:
+        if not name: raise ValueError("service name is required")
+        if name in self._services: raise ValueError(f"service already bound: {name}")
+        self._services[name] = service
+    def get(self, name: str, expected: type[T] | None = None) -> T | object:
+        value = self._services[name]
+        if expected is not None and not isinstance(value, expected): raise TypeError(name)
+        return value
