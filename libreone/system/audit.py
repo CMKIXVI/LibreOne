@@ -10,3 +10,7 @@ class AuditRecord:
     id: str = field(default_factory=lambda: str(new_system_id()))
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: dict[str, object] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if not self.action.strip() or not self.actor.strip():
+            raise ValueError("action and actor are required")
