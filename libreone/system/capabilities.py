@@ -17,4 +17,4 @@ class Capability:
 
     @property
     def key(self) -> str:
-        return f"{self.name}@{self.version}"
+        return f"{self.name}:{self.version}"
