@@ -9,7 +9,10 @@ class SystemConfig:
 
     @classmethod
     def from_environment(cls) -> "SystemConfig":
+        environment = os.getenv("LIBREONE_ENVIRONMENT")
+        if environment is None:
+            environment = os.getenv("LIBREONE_ENV", "production")
         return cls(
-            environment=os.getenv("LIBREONE_ENV", "production"),
+            environment=environment,
             data_dir=os.getenv("LIBREONE_DATA_DIR", ".libreone"),
         )
