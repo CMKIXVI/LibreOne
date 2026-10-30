@@ -10,3 +10,11 @@ class SystemEvent:
     payload: dict[str, object] = field(default_factory=dict)
     id: UUID = field(default_factory=new_system_id)
     occurred_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
+    @property
+    def timestamp(self) -> datetime:
+        return self.occurred_at
+
+    @property
+    def metadata(self) -> dict[str, object]:
+        return self.payload
