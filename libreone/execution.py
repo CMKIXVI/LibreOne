@@ -1,18 +1,16 @@
-from dataclasses import dataclass
-from typing import Any
-from .capabilities import Capability
+"""Deterministic capability execution boundary."""
+from .capabilities import CapabilityRegistry
 from .context import Context
+from .models import Result, Request
 from .policy import Policy
 
-@dataclass(frozen=True, slots=True)
-class ExecutionResult:
-    value: Any
-    capability: str
-
 class Executor:
-    def __init__(self, policy: Policy) -> None:
-        self.policy = policy
-
-    def run(self, capability: Capability, context: Context, **kwargs: Any) -> ExecutionResult:
-        self.policy.authorize(capability.risk, capability.scopes)
-        return ExecutionResult(capability.handler(context=context, **kwargs), capability.name)
+    def __init__(self, registry: CapabilityRegistry, policy: Policy | None = None) -> None:
+        self.registry = registry
+        self.policy = policy or Policy()
+    def execute(self, request: Request, context: Context | None = None) -> Result:
+        name = request.action
+        if not self.policy.permits(name): raise PermissionError(name)
+        capability = self.registry.resolve(name)
+        value = capability.handler(request.input, context or Context())
+        return Result(request_id=request.id, value=value)
