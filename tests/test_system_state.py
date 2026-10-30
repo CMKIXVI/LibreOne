@@ -1,3 +1,6 @@
+import pytest
+
+from libreone.system.errors import StateError
 from libreone.system.state import SystemPhase, SystemState
 
 
@@ -15,9 +18,5 @@ def test_system_state_boot_sequence():
 
 def test_system_state_rejects_invalid_transition():
     state = SystemState()
-    try:
+    with pytest.raises(StateError):
         state.transition(SystemPhase.RUNNING)
-    except Exception:
-        pass
-    else:
-        raise AssertionError("invalid transition was accepted")
