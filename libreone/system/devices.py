@@ -17,3 +17,7 @@ class Device:
     kind: DeviceType
     vendor: str | None = None
     address: str | None = None
+
+    @property
+    def device_type(self) -> DeviceType:
+        return self.kind
