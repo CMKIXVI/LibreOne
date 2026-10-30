@@ -14,3 +14,6 @@ class Registry:
 
     def get(self, name: str) -> T:
         return self._items[name]  # type: ignore[return-value]
+
+    def __contains__(self, name: object) -> bool:
+        return name in self._items
