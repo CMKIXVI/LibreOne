@@ -39,7 +39,8 @@ def test_supervisor_rolls_back_started_services_when_start_fails():
     with pytest.raises(RuntimeError):
         supervisor.start()
     assert log == ["start:a", "start:b", "stop:a"]
-    supervisor.start()
+    supervisor.stop()
+    assert log == ["start:a", "start:b", "stop:a"]
 
 
 def test_supervisor_rejects_double_start():
