@@ -7,16 +7,33 @@ class CapabilityRegistry:
 
     @staticmethod
     def _canonical_key(key: str) -> str:
-        if not isinstance(key, str) or not key.strip():
-            raise ValueError("capability key cannot be empty")
+        if not isinstance(key, str):
+            raise TypeError("capability key must be a string")
         value = key.strip()
-        if "@" in value and ":" not in value:
+        if not value:
+            raise ValueError("capability key cannot be empty")
+        if "@" in value:
+            if ":" in value:
+                raise ValueError("capability key cannot mix @ and : separators")
             name, version = value.split("@", 1)
+            name = name.strip()
+            version = version.strip()
+            if not name or not version:
+                raise ValueError("capability key must contain name and version")
             return f"{name}:{version}"
-        return value
+        if ":" in value:
+            name, version = value.split(":", 1)
+            name = name.strip()
+            version = version.strip()
+            if not name or not version:
+                raise ValueError("capability key must contain name and version")
+            return f"{name}:{version}"
+        raise ValueError("capability key must contain name and version")
 
     def register(self, capability: Capability) -> None:
-        key = capability.key
+        if not isinstance(capability, Capability):
+            raise TypeError("capability must be a Capability")
+        key = self._canonical_key(capability.key)
         if key in self._items:
             raise ValueError(f"capability already registered: {key}")
         self._items[key] = capability
