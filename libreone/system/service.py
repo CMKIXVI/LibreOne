@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .health import HealthReport
+from .health import Health, HealthReport
 
 
 class SystemService(ABC):
@@ -9,5 +9,5 @@ class SystemService(ABC):
     @abstractmethod
     def stop(self) -> None: ...
 
-    @abstractmethod
-    def health(self) -> HealthReport: ...
+    def health(self) -> HealthReport:
+        return HealthReport("system", Health.OK)
