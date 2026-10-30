@@ -13,8 +13,8 @@ class SystemPhase(str, Enum):
 
 
 class SystemState:
-    def __init__(self) -> None:
-        self.phase = SystemPhase.OFF
+    def __init__(self, phase: SystemPhase = SystemPhase.OFF) -> None:
+        self.phase = phase
 
     def transition(self, target: SystemPhase) -> None:
         allowed = {
