@@ -1,13 +1,14 @@
+"""Minimal policy contract for capability execution."""
 from dataclasses import dataclass
-from .errors import PolicyDenied
 
 @dataclass(frozen=True, slots=True)
 class Policy:
-    max_risk: int = 50
-    allowed_scopes: frozenset[str] = frozenset()
+    allow_external_models: bool = False
+    allow_network: bool = True
+    allow_host_processes: bool = False
 
-    def authorize(self, risk: int, scopes: frozenset[str]) -> None:
-        if risk > self.max_risk:
-            raise PolicyDenied("capability risk exceeds policy")
-        if not scopes.issubset(self.allowed_scopes):
-            raise PolicyDenied("capability scope is not authorized")
+    def permits(self, capability: str) -> bool:
+        if capability == "external_model": return self.allow_external_models
+        if capability == "host_process": return self.allow_host_processes
+        if capability == "network": return self.allow_network
+        return True
