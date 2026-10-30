@@ -9,25 +9,27 @@ class LifecycleState(str, Enum):
     FAILED = "failed"
 
 
+from .lifecycle_policy import can_transition
+
+
 class Lifecycle:
     def __init__(self) -> None:
         self.state = LifecycleState.STOPPED
 
+    def _transition(self, target: LifecycleState) -> None:
+        if not can_transition(self.state, target):
+            raise RuntimeError(f"cannot transition from {self.state.value} to {target.value}")
+        self.state = target
+
     def start(self) -> None:
-        if self.state is not LifecycleState.STOPPED:
-            raise RuntimeError(f"cannot start from {self.state.value}")
-        self.state = LifecycleState.STARTING
-        self.state = LifecycleState.RUNNING
+        self._transition(LifecycleState.STARTING)
+        self._transition(LifecycleState.RUNNING)
 
     def stop(self) -> None:
         if self.state is LifecycleState.STOPPED:
             return
-        if self.state is not LifecycleState.RUNNING:
-            raise RuntimeError(f"cannot stop from {self.state.value}")
-        self.state = LifecycleState.STOPPING
-        self.state = LifecycleState.STOPPED
+        self._transition(LifecycleState.STOPPING)
+        self._transition(LifecycleState.STOPPED)
 
     def fail(self) -> None:
-        if self.state is LifecycleState.STOPPED:
-            raise RuntimeError("cannot fail a stopped lifecycle")
-        self.state = LifecycleState.FAILED
+        self._transition(LifecycleState.FAILED)
