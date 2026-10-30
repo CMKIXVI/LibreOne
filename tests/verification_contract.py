@@ -1,6 +1,9 @@
+from hashlib import sha256
+
 from libreone.system.verification import verify_digest
 
 
 def verify_contract() -> bool:
     value = b"libreone"
-    return verify_digest(value, verify_digest.__globals__["hashlib"].sha256(value).hexdigest())
+    digest = sha256(value).hexdigest()
+    return verify_digest(digest, digest)
