@@ -28,5 +28,19 @@ def test_capability_rejects_non_string_description():
 
 def test_capability_key_has_consistent_hash_semantics():
     capability = Capability("storage", "1")
-    assert capability.key == "storage@1"
-    assert hash(capability.key) == hash("storage@1")
+    assert capability.key == "storage:1"
+    assert hash(capability.key) == hash("storage:1")
+
+
+def test_capability_registry_resolves_at_alias():
+    registry = CapabilityRegistry()
+    capability = Capability("compute", "2")
+    registry.register(capability)
+    assert registry.resolve("compute@2") is capability
+    assert registry.resolve("compute:2") is capability
+
+
+def test_capability_registry_rejects_blank_resolution_key():
+    registry = CapabilityRegistry()
+    with pytest.raises(ValueError, match="key cannot be empty"):
+        registry.resolve(" ")
