@@ -1,15 +1,12 @@
+import pytest
+
 from libreone.system.resources import ResourceLimits
 
 
-def test_resource_limits_defaults_are_valid():
-    limits = ResourceLimits()
-    assert limits.cpu_seconds > 0
-    assert limits.memory_bytes > 0
+def test_resource_limits_default_validates():
+    ResourceLimits().validate()
 
 
-def test_resource_limits_reject_non_positive_values():
-    try:
-        ResourceLimits(cpu_seconds=0)
-    except ValueError:
-        return
-    raise AssertionError("invalid resource limit accepted")
+def test_resource_limits_rejects_non_positive_values():
+    with pytest.raises(ValueError):
+        ResourceLimits(cpu_seconds=0).validate()
