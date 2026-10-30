@@ -7,7 +7,10 @@ class RuntimeTask:
     name: str
     limits: ResourceLimits = ResourceLimits()
 
+    def __post_init__(self) -> None:
+        self.validate()
+
     def validate(self) -> None:
-        if not self.name.strip():
+        if not isinstance(self.name, str) or not self.name.strip():
             raise ValueError("task name cannot be empty")
         self.limits.validate()
