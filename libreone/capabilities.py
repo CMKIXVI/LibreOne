@@ -1,18 +1,17 @@
-from dataclasses import dataclass, field
-from typing import Callable, Any
-from uuid import UUID
-from .ids import new_id
+"""Capability registration and lookup contract."""
+from dataclasses import dataclass
+from collections.abc import Callable
 
 @dataclass(frozen=True, slots=True)
 class Capability:
     name: str
-    handler: Callable[..., Any]
-    id: UUID = field(default_factory=new_id)
-    risk: int = 0
-    scopes: frozenset[str] = frozenset()
+    handler: Callable[..., object]
 
-    def __post_init__(self) -> None:
-        if not self.name.strip():
-            raise ValueError("capability name must not be empty")
-        if not 0 <= self.risk <= 100:
-            raise ValueError("risk must be between 0 and 100")
+class CapabilityRegistry:
+    def __init__(self) -> None:
+        self._items: dict[str, Capability] = {}
+    def register(self, name: str, handler: Callable[..., object]) -> None:
+        if not name or name in self._items: raise ValueError("invalid or duplicate capability")
+        self._items[name] = Capability(name, handler)
+    def resolve(self, name: str) -> Capability:
+        return self._items[name]
