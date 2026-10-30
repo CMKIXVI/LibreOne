@@ -6,4 +6,6 @@ class BootPolicy:
         self.allow_recovery = allow_recovery
 
     def authorize(self, mode: BootMode) -> bool:
-        return mode != BootMode.RECOVERY or self.allow_recovery
+        if mode is BootMode.RECOVERY and not self.allow_recovery:
+            raise PermissionError("recovery boot is disabled")
+        return True
