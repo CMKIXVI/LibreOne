@@ -1,13 +1,5 @@
-from dataclasses import dataclass
-from typing import Any
+"""Knowledge provider protocol."""
+from typing import Protocol, Iterable
 
-@dataclass(frozen=True, slots=True)
-class KnowledgeItem:
-    key: str
-    content: Any
-    source: str
-    confidence: float = 1.0
-
-    def __post_init__(self) -> None:
-        if not 0.0 <= self.confidence <= 1.0:
-            raise ValueError("confidence must be between 0 and 1")
+class KnowledgeProvider(Protocol):
+    def search(self, query: str, limit: int = 10) -> Iterable[object]: ...
