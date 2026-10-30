@@ -1,11 +1,12 @@
+"""Immutable runtime configuration primitives."""
 from dataclasses import dataclass
-import os
 
 @dataclass(frozen=True, slots=True)
-class Settings:
+class RuntimeConfig:
     environment: str = "production"
     log_level: str = "INFO"
+    max_workers: int = 8
 
-    @classmethod
-    def from_env(cls) -> "Settings":
-        return cls(os.getenv("LIBREONE_ENV", "production"), os.getenv("LIBREONE_LOG_LEVEL", "INFO"))
+    def __post_init__(self) -> None:
+        if self.max_workers < 1:
+            raise ValueError("max_workers must be positive")
