@@ -4,5 +4,5 @@ from uuid import UUID, uuid4
 
 @dataclass(frozen=True)
 class Identity:
-    name: str
+    name: str = ""
     id: UUID = field(default_factory=uuid4)
