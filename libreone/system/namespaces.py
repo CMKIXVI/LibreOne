@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from uuid import UUID
 
 
 class _NamespaceKey(str):
@@ -12,6 +11,11 @@ class _NamespaceKey(str):
         if str.__eq__(self, other):
             return True
         return any(str.__eq__(alias, other) for alias in self._aliases)
+
+    def endswith(self, suffix: str | tuple[str, ...], *args: int) -> bool:
+        if str.endswith(self, suffix, *args):
+            return True
+        return any(str.endswith(alias, suffix, *args) for alias in self._aliases)
 
     def __hash__(self) -> int:
         return str.__hash__(self)
