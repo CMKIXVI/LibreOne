@@ -23,3 +23,7 @@ class HealthReport:
             object.__setattr__(self, "component", component)
             object.__setattr__(self, "status", status if isinstance(status, Health) else Health(status))
             object.__setattr__(self, "detail", detail)
+
+    @property
+    def message(self) -> str:
+        return self.detail
