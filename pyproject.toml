@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "libreone"
+version = "0.1.0"
+description = "LibreOne universal AI runtime"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.setuptools.packages.find]
+include = ["libreone*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
