@@ -2,7 +2,7 @@ from libreone.system.health import Health
 from libreone.system.service import SystemService
 
 
-class TestService(SystemService):
+class _TestService(SystemService):
     def __init__(self):
         self.started = False
 
@@ -17,7 +17,7 @@ class TestService(SystemService):
 
 
 def test_service_contract():
-    service = TestService()
+    service = _TestService()
     service.start()
     assert service.started
     assert service.health() is Health.OK
