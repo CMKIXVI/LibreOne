@@ -7,5 +7,6 @@ class Capability:
     version: str
     description: str = ""
 
+    @property
     def key(self) -> str:
         return f"{self.name}@{self.version}"
