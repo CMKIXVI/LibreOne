@@ -57,3 +57,21 @@ def test_scheduler_rejects_non_callable_tasks():
     scheduler = Scheduler()
     with pytest.raises(TypeError):
         scheduler.submit(123)
+
+
+def test_scheduler_close_discards_pending_work_and_blocks_submit():
+    scheduler = Scheduler()
+    scheduler.submit(lambda: None)
+    scheduler.close()
+    assert scheduler.closed is True
+    assert scheduler.pending == 0
+    assert scheduler.run_once() is None
+    with pytest.raises(RuntimeError, match="scheduler is closed"):
+        scheduler.submit(lambda: None)
+
+
+def test_scheduler_close_is_terminal():
+    scheduler = Scheduler()
+    scheduler.close()
+    with pytest.raises(RuntimeError, match="scheduler is already closed"):
+        scheduler.close()
