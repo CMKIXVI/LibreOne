@@ -43,17 +43,17 @@ class RetryPolicy:
         if self.initial_delay == 0:
             return 0.0
         if self.multiplier == 1 or retry_number == 0:
-            return float(self.initial_delay)
-
-        delay = float(self.initial_delay)
-        for _ in range(retry_number):
-            if self.max_delay is not None and delay >= float(self.max_delay):
-                return float(self.max_delay)
-            delay *= float(self.multiplier)
-            if not math.isfinite(delay):
-                if self.max_delay is not None:
+            delay = float(self.initial_delay)
+        else:
+            delay = float(self.initial_delay)
+            for _ in range(retry_number):
+                if self.max_delay is not None and delay >= float(self.max_delay):
                     return float(self.max_delay)
-                raise ValueError("retry delay exceeds finite range")
+                delay *= float(self.multiplier)
+                if not math.isfinite(delay):
+                    if self.max_delay is not None:
+                        return float(self.max_delay)
+                    raise ValueError("retry delay exceeds finite range")
         if self.max_delay is not None:
             delay = min(delay, float(self.max_delay))
         return delay
