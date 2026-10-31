@@ -20,6 +20,11 @@ def test_retry_policy_calculates_bounded_backoff():
     assert policy.delay_for(2) == 2.5
 
 
+def test_retry_policy_applies_ceiling_to_first_retry():
+    policy = RetryPolicy(attempts=2, initial_delay=10, multiplier=2, max_delay=3)
+    assert policy.delay_for(0) == 3.0
+
+
 def test_retry_policy_rejects_invalid_numeric_values():
     with pytest.raises(TypeError):
         RetryPolicy(initial_delay=True)
