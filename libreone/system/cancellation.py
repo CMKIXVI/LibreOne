@@ -1,14 +1,19 @@
+from threading import Event
+
+
 class CancellationToken:
+    """Thread-safe cooperative cancellation signal."""
+
     def __init__(self) -> None:
-        self._cancelled = False
+        self._event = Event()
 
     def cancel(self) -> None:
-        self._cancelled = True
+        self._event.set()
 
     @property
     def cancelled(self) -> bool:
-        return self._cancelled
+        return self._event.is_set()
 
     def raise_if_cancelled(self) -> None:
-        if self._cancelled:
+        if self.cancelled:
             raise RuntimeError("operation cancelled")
