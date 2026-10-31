@@ -41,3 +41,12 @@ def test_retry_policy_rejects_invalid_retry_number():
         policy.delay_for(-1)
     with pytest.raises(ValueError):
         policy.delay_for(1)
+
+
+def test_retry_policy_bounds_overflowing_backoff():
+    bounded = RetryPolicy(attempts=3, initial_delay=1e308, multiplier=10, max_delay=60)
+    assert bounded.delay_for(1) == 60.0
+
+    unbounded = RetryPolicy(attempts=4, initial_delay=1e308, multiplier=10)
+    with pytest.raises(ValueError, match="exceeds finite range"):
+        unbounded.delay_for(2)
