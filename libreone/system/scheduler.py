@@ -13,11 +13,14 @@ class Scheduler:
         self._lock = Lock()
         self._next_id = 1
         self._max_pending = max_pending
+        self._closed = False
 
     def submit(self, task: Callable[[], object]) -> int:
         if not callable(task):
             raise TypeError("scheduled task must be callable")
         with self._lock:
+            if self._closed:
+                raise RuntimeError("scheduler is closed")
             if self._max_pending is not None and len(self._queue) >= self._max_pending:
                 raise RuntimeError("scheduler queue is full")
             task_id = self._next_id
@@ -41,6 +44,18 @@ class Scheduler:
                 return None
             _, task = self._queue.popleft()
         return task()
+
+    def close(self) -> None:
+        with self._lock:
+            if self._closed:
+                raise RuntimeError("scheduler is already closed")
+            self._closed = True
+            self._queue.clear()
+
+    @property
+    def closed(self) -> bool:
+        with self._lock:
+            return self._closed
 
     @property
     def pending(self) -> int:
